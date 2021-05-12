@@ -62,10 +62,11 @@ class Template {
 }
 
 class PullRequestsTemplate {
-    constructor(organization, project, repository) {
+    constructor(organization, project, repository, jiraOrganization) {
         this.organization = organization;
         this.repository = repository;
         this.project = project;
+        this.jiraOrganization = jiraOrganization;
         this.template = new Template("pull-requests");
         this.itemTemplate = new PullRequestItemTemplate();
     }
@@ -78,8 +79,9 @@ class PullRequestsTemplate {
         container.textContent = "";
 
         pullRequests.forEach(element => {
-            const link = `https://${this.organization}.visualstudio.com/${this.project}/_git/${this.repository}/pullrequest/${element.codeReviewId}`;
-            container.appendChild(this.itemTemplate.create(element.codeReviewId, element.title, link));
+            const prLink = `https://${this.organization}.visualstudio.com/${this.project}/_git/${this.repository}/pullrequest/${element.codeReviewId}`;
+            const jiraLink = `https://${this.jiraOrganization}.atlassian.net/browse/${element.ticket}`;
+            container.appendChild(this.itemTemplate.create(element.codeReviewId, element.title, element.ticket, prLink, jiraLink));
         });
 
         return this.template.clone();
@@ -91,9 +93,10 @@ class PullRequestItemTemplate {
         this.template = new Template("pull-request-item");
     }
 
-    create(id, description, link) {
+    create(id, description, tiket, prLink, ticketLink) {
         this.template.clear();
-        this.template.setAnchor(".id", link, id);
+        this.template.setAnchor(".id", prLink, id);
+        this.template.setAnchor(".ticket", ticketLink, tiket);
         this.template.setText(".description", description);
         return this.template.clone();
     }

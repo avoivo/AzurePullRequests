@@ -1,12 +1,9 @@
 class App {
-    constructor(appElement, organization, project, repositoryId, username, password) {
+    constructor(appElement, azureConfig, jiraConfig) {
         this.appElement = appElement;
-        this.organization = organization;
-        this.project = project;
-        this.repositoryId = repositoryId;
-        this.username = username;
-        this.password = password;
-        this.pullRequeststemplate = new PullRequestsTemplate(this.organization, this.project, this.repositoryId);
+        this.azureConfig = azureConfig;
+        this.jiraConfig = jiraConfig;
+        this.pullRequeststemplate = new PullRequestsTemplate(this.azureConfig.organization, this.azureConfig.project, this.azureConfig.repositoryId, this.jiraConfig.organization);
         this.missingItemsTemplate = new MissingItemsTemplate();
     }
 
@@ -23,9 +20,9 @@ class App {
         }
 
         let headers = new Headers();
-        headers.append('Authorization', 'Basic' + btoa(this.username + ":" + this.password));
+        headers.append('Authorization', 'Basic' + btoa(this.azureConfig.username + ":" + this.azureConfig.password));
 
-        const fetchData = (status, top, skip, totalLimit) => fetch(`https://dev.azure.com/${this.organization}/${this.project}/_apis/git/repositories/${this.repositoryId}/pullrequests?searchCriteria.status=${status}&$top=${top}&$skip=${skip}&api-version=6.0`,
+        const fetchData = (status, top, skip, totalLimit) => fetch(`https://dev.azure.com/${this.azureConfig.organization}/${this.azureConfig.project}/_apis/git/repositories/${this.azureConfig.repositoryId}/pullrequests?searchCriteria.status=${status}&$top=${top}&$skip=${skip}&api-version=6.0`,
             {
                 headers: headers
             })
@@ -47,6 +44,7 @@ class App {
                     /*tags.some(t => pr.title.includes(t))
                     ||*/ (pr.labels && pr.labels.some(l => tags.some(t => ciEquals(t, l.name))))
                 ))
+                .then(data => data.map(pr => ({ ...pr, ticket: tags.filter(t => pr.labels.some(l => ciEquals(l.name, t)))[0] })))
                 .then(data => {
                     this.appElement.append(this.pullRequeststemplate.create(status, data));
                     const availableNames = data
@@ -77,5 +75,5 @@ class App {
 }
 
 const appEl = document.getElementById("app");
-const app = new App(appEl, config.organization, config.project, config.repositoryId, config.username, config.password);
+const app = new App(appEl, config.azureDevops, config.jira);
 app.start();

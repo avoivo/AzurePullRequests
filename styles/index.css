@@ -2,7 +2,6 @@
     display: flex;
     flex-flow: column nowrap;
     background-color: white;
-    width: 80%;
     margin: 0 auto;
     border-radius: 4px;
     border: 1px solid #DADADA;
@@ -18,12 +17,15 @@
 
 .col {
   display: flex;
-  flex: 1;
   font-size: 14px;
-  padding: 8px 0;
-  justify-content: center;
+  padding: 8px;
   align-items: center;
   transition: all 0.15s ease-in-out;
+  min-width: 5em;
+}
+
+.col.description {
+  flex: 1;
 }
 
 .col:hover {
@@ -34,4 +36,8 @@
 
 .row:last-child {
   border-bottom: 0;
+}
+
+.title {
+  text-transform: capitalize;
 }
