@@ -1,0 +1,37 @@
+.table {
+    display: flex;
+    flex-flow: column nowrap;
+    background-color: white;
+    width: 80%;
+    margin: 0 auto;
+    border-radius: 4px;
+    border: 1px solid #DADADA;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, .08);
+  }
+
+.row {
+    display: flex;
+    flex-flow: row nowrap;
+    width: 100%;
+    border-bottom: 1px solid #dadada;
+  }
+
+.col {
+  display: flex;
+  flex: 1;
+  font-size: 14px;
+  padding: 8px 0;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.15s ease-in-out;
+}
+
+.col:hover {
+  cursor: pointer;
+  background-color: #F0F0F0;
+/*   box-shadow: 0px 1px 4px rgba(0, 0, 0, .08); */
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
