@@ -77,7 +77,22 @@ class App {
                 }
             })
             ;
-
+        const voteToDescription = (vote) => {
+            switch (vote) {
+                case 10:
+                    return "approved";
+                case 5:
+                    return "approved with suggestions";
+                case 0:
+                    return "no vote";
+                case -5:
+                    return "waiting for author";
+                case -10:
+                    return "rejected";
+                default:
+                    return "unknown status";
+            }
+        }
         const appendSection = (status, tags) => {
             this.appElement.append(this.spinnerTemplate.create());
             return fetchData(status, 100, 0, 600)
@@ -85,7 +100,14 @@ class App {
                     /*tags.some(t => pr.title.includes(t))
                     ||*/ (pr.labels && pr.labels.some(l => tags.some(t => this.helper.ciEquals(t, l.name))))
                 ))
-                .then(data => data.map(pr => ({ ...pr, ticket: tags.filter(t => pr.labels.some(l => this.helper.ciEquals(l.name, t)))[0] })))
+                .then(data => data.map(pr => {
+                    const selfPRequest = pr.reviewers.find(r => this.helper.ciEquals(r.uniqueName, this.azureDevopsConfig.username));
+                    return {
+                        ...pr,
+                        ticket: tags.find(t => pr.labels.some(l => this.helper.ciEquals(l.name, t))),
+                        approvedByMe: selfPRequest ? voteToDescription(selfPRequest.vote) : ""
+                    };
+                }))
                 .then(data => {
                     this.appElement.replaceChild(
                         this.pullRequeststemplate.create(status, data),

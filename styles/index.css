@@ -10,7 +10,7 @@
 
 .row {
     display: flex;
-    flex-flow: row nowrap;
+    flex-flow: row wrap;
     width: 100%;
     border-bottom: 1px solid #dadada;
   }
