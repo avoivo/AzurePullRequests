@@ -10,6 +10,19 @@ class Helper {
     }
 }
 
+class Config {
+    username;
+    password;
+    save() {
+        localStorage.setItem("config", JSON.stringify(this));
+    }
+    load() {
+        const storedConfig = JSON.parse(localStorage.getItem("config")) || {};
+        this.username = storedConfig.username || "";
+        this.password = storedConfig.password || "";
+    }
+}
+
 class App {
     constructor(appElement, azureConfig, jiraConfig) {
         this.appElement = appElement;
@@ -76,15 +89,28 @@ class App {
 
     start() {
 
+        const config = new Config();
+        config.load();
 
+        const usernameInput = document.querySelector("input#username");
+        const passwordInput = document.querySelector("input#password");
+
+        usernameInput.value = config.username;
+        passwordInput.value = config.password;
 
         document
             .querySelector("form#user-login")
             .addEventListener("submit", e => {
                 e.preventDefault();
                 e.stopPropagation();
-                const username = document.querySelector("input#username").value;
-                const password = document.querySelector("input#password").value;
+                const username = usernameInput.value;
+                const password = passwordInput.value;
+
+                const config = new Config();
+                config.username = username;
+                config.password = password;
+                config.save();
+
                 this.load(username, password);
             });
     }
