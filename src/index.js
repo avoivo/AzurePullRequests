@@ -49,6 +49,7 @@ class App {
         this.jiraConfig = new JiraConfig();
         this.pullRequeststemplate = new PullRequestsTemplate(this.azureDevopsConfig.organization, this.azureDevopsConfig.project, this.azureDevopsConfig.repository, this.jiraConfig.organization);
         this.missingItemsTemplate = new MissingItemsTemplate();
+        this.spinnerTemplate = new SpinnerTemplate();
         this.helper = new Helper();
     }
 
@@ -78,6 +79,7 @@ class App {
             ;
 
         const appendSection = (status, tags) => {
+            this.appElement.append(this.spinnerTemplate.create());
             return fetchData(status, 100, 0, 600)
                 .then(data => data.filter(pr =>
                     /*tags.some(t => pr.title.includes(t))
@@ -85,7 +87,10 @@ class App {
                 ))
                 .then(data => data.map(pr => ({ ...pr, ticket: tags.filter(t => pr.labels.some(l => this.helper.ciEquals(l.name, t)))[0] })))
                 .then(data => {
-                    this.appElement.append(this.pullRequeststemplate.create(status, data));
+                    this.appElement.replaceChild(
+                        this.pullRequeststemplate.create(status, data),
+                        this.appElement.lastElementChild
+                    );
                     const availableNames = data
                         .map(pr => pr.labels ?? [])
                         .reduce(

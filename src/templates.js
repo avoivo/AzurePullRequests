@@ -114,3 +114,12 @@ class MissingItemsTemplate {
         return this.template.clone();
     }
 }
+
+class SpinnerTemplate {
+    constructor() {
+        this.template = new Template("spinner-template");
+    }
+    create() {
+        return this.template.clone();
+    }
+}
