@@ -104,14 +104,28 @@ class PullRequestItemTemplate {
 }
 
 class MissingItemsTemplate {
-    constructor() {
+    constructor(jiraOrganization) {
         this.template = new Template("missing-items");
+        this.jiraOrganization = jiraOrganization;
     }
 
     create(title, items) {
+        items = items || [];
         this.template.clear();
         this.template.setText(".title", title);
-        this.template.setText(".items", items.join(", "));
+
+
+        const container = this.template.getElement(".items");
+
+        items.map(item => {
+            const anchorElement = document.createElement("a");
+            anchorElement.href = `https://${this.jiraOrganization}.atlassian.net/browse/${item}`;
+            anchorElement.textContent = item;
+            anchorElement.target = "_blank"
+            container.append(anchorElement);
+        });
+
+
         return this.template.clone();
     }
 }

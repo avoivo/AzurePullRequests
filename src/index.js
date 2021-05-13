@@ -48,7 +48,7 @@ class App {
         this.azureDevopsConfig = new AzureDevopsConfig();
         this.jiraConfig = new JiraConfig();
         this.pullRequeststemplate = new PullRequestsTemplate(this.azureDevopsConfig.organization, this.azureDevopsConfig.project, this.azureDevopsConfig.repository, this.jiraConfig.organization);
-        this.missingItemsTemplate = new MissingItemsTemplate();
+        this.missingItemsTemplate = new MissingItemsTemplate(this.jiraConfig.organization);
         this.spinnerTemplate = new SpinnerTemplate();
         this.helper = new Helper();
     }
