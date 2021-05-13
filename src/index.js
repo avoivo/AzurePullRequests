@@ -10,38 +10,62 @@ class Helper {
     }
 }
 
-class Config {
+class AzureDevopsConfig {
+    organization;
+    project;
+    repository;
     username;
     password;
-    save() {
-        localStorage.setItem("config", JSON.stringify(this));
-    }
-    load() {
-        const storedConfig = JSON.parse(localStorage.getItem("config")) || {};
+    constructor() {
+        const storedConfig = JSON.parse(localStorage.getItem("AzureDevopsConfig")) || {};
+        this.organization = storedConfig.organization || "";
+        this.project = storedConfig.project || "";
+        this.repository = storedConfig.repository || "";
         this.username = storedConfig.username || "";
         this.password = storedConfig.password || "";
     }
+
+    save() {
+        localStorage.setItem("AzureDevopsConfig", JSON.stringify(this));
+    }
 }
 
+class JiraConfig {
+    organization;
+    constructor() {
+        const storedConfig = JSON.parse(localStorage.getItem("JiraConfig")) || {};
+        this.organization = storedConfig.organization || "";
+    }
+    save() {
+        localStorage.setItem("JiraConfig", JSON.stringify(this));
+    }
+}
+
+
 class App {
-    constructor(appElement, azureConfig, jiraConfig) {
+    constructor(appElement) {
         this.appElement = appElement;
-        this.azureConfig = azureConfig;
-        this.jiraConfig = jiraConfig;
-        this.pullRequeststemplate = new PullRequestsTemplate(this.azureConfig.organization, this.azureConfig.project, this.azureConfig.repositoryId, this.jiraConfig.organization);
+        this.azureDevopsConfig = new AzureDevopsConfig();
+        this.jiraConfig = new JiraConfig();
+        this.pullRequeststemplate = new PullRequestsTemplate(this.azureDevopsConfig.organization, this.azureDevopsConfig.project, this.azureDevopsConfig.repository, this.jiraConfig.organization);
         this.missingItemsTemplate = new MissingItemsTemplate();
         this.helper = new Helper();
     }
 
-    load(username, password) {
+    load() {
         let headers = new Headers();
-        headers.append('Authorization', 'Basic' + btoa(username + ":" + password));
+        headers.append('Authorization', 'Basic' + btoa(this.azureDevopsConfig.username + ":" + this.azureDevopsConfig.password));
 
-        const fetchData = (status, top, skip, totalLimit) => fetch(`https://dev.azure.com/${this.azureConfig.organization}/${this.azureConfig.project}/_apis/git/repositories/${this.azureConfig.repositoryId}/pullrequests?searchCriteria.status=${status}&$top=${top}&$skip=${skip}&api-version=6.0`,
+        const fetchData = (status, top, skip, totalLimit) => fetch(`https://dev.azure.com/${this.azureDevopsConfig.organization}/${this.azureDevopsConfig.project}/_apis/git/repositories/${this.azureDevopsConfig.repository}/pullrequests?searchCriteria.status=${status}&$top=${top}&$skip=${skip}&api-version=6.0`,
             {
                 headers: headers
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(jsonData => {
                 if (jsonData.count < top || skip + jsonData.count > totalLimit) {
                     return jsonData.value;
@@ -89,29 +113,38 @@ class App {
 
     start() {
 
-        const config = new Config();
-        config.load();
+        const azureDevopsOrganizationInput = document.querySelector("input#azure-devops_organization");
+        const azureDevopsProjectInput = document.querySelector("input#azure-devops_project");
+        const azureDevopsRepositoryInput = document.querySelector("input#azure-devops_repository");
+        const azureDevopsUsernameInput = document.querySelector("input#azure-devops_username");
+        const azureDevopsPasswordInput = document.querySelector("input#azure-devops_password");
+        const jiraOrganizationInput = document.querySelector("input#jira_organization");
 
-        const usernameInput = document.querySelector("input#username");
-        const passwordInput = document.querySelector("input#password");
+        azureDevopsOrganizationInput.value = this.azureDevopsConfig.organization;
+        azureDevopsProjectInput.value = this.azureDevopsConfig.project;
+        azureDevopsRepositoryInput.value = this.azureDevopsConfig.repository;
+        azureDevopsUsernameInput.value = this.azureDevopsConfig.username;
+        azureDevopsPasswordInput.value = this.azureDevopsConfig.password;
+        jiraOrganizationInput.value = this.jiraConfig.organization;
 
-        usernameInput.value = config.username;
-        passwordInput.value = config.password;
+        const saveConfig = () => {
+            this.azureDevopsConfig.organization = azureDevopsOrganizationInput.value;
+            this.azureDevopsConfig.project = azureDevopsProjectInput.value;
+            this.azureDevopsConfig.repository = azureDevopsRepositoryInput.value;
+            this.azureDevopsConfig.username = azureDevopsUsernameInput.value;
+            this.azureDevopsConfig.password = azureDevopsPasswordInput.value;
+            this.azureDevopsConfig.save();
+            this.jiraConfig.organization = jiraOrganizationInput.value;
+            this.jiraConfig.save();
+        }
 
         document
-            .querySelector("form#user-login")
+            .querySelector("form#configuration")
             .addEventListener("submit", e => {
                 e.preventDefault();
                 e.stopPropagation();
-                const username = usernameInput.value;
-                const password = passwordInput.value;
-
-                const config = new Config();
-                config.username = username;
-                config.password = password;
-                config.save();
-
-                this.load(username, password);
+                saveConfig();
+                this.load();
             });
     }
 
@@ -121,5 +154,5 @@ class App {
 }
 
 const appEl = document.getElementById("app");
-const app = new App(appEl, config.azureDevops, config.jira);
+const app = new App(appEl);
 app.start();

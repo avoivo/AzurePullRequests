@@ -11,16 +11,43 @@
 
 <body>
     <div class="header">
-        <form id="user-login">
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" name="username" id="username">
-            </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password">
-            </div>
-            <input type="submit" value="Submit">
+        <form id="configuration">
+            <fieldset>
+                <legend>Azure Devops</legend>
+                <div class="input-group">
+                    <label for="azure-devops_organization">Organization</label>
+                    <input type="text" name="azure-devops_organization" id="azure-devops_organization">
+                </div>
+                <div class="input-group">
+                    <label for="azure-devops_project">Project</label>
+                    <input type="text" name="azure-devops_project" id="azure-devops_project">
+                </div>
+                <div class="input-group">
+                    <label for="azure-devops_repository">Repository</label>
+                    <input type="text" name="azure-devops_repository" id="azure-devops_repository">
+                </div>
+
+                <div class="input-group">
+                    <label for="azure-devops_username">Username</label>
+                    <input type="text" name="azure-devops_username" id="azure-devops_username">
+                </div>
+                <div class="input-group">
+                    <label for="azure-devops_password">Password</label>
+                    <input type="password" name="azure-devops_password" id="azure-devops_password">
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Jira</legend>
+                <div class="input-group">
+                    <label for="jira_organization">Organization</label>
+                    <input type="text" name="jira_organization" id="jira_organization">
+                </div>
+
+            </fieldset>
+
+
+
+            <input type="submit" value="Load data">
         </form>
     </div>
     <div id="app"></div>
@@ -48,7 +75,6 @@
         <div class="items"></div>
     </template>
 
-    <script src="config.js"></script>
     <script src="src/templates.js"></script>
     <script src="src/index.js"></script>
 </body>
