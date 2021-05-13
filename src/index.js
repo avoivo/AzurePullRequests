@@ -105,7 +105,8 @@ class App {
                     return {
                         ...pr,
                         ticket: tags.find(t => pr.labels.some(l => this.helper.ciEquals(l.name, t))),
-                        approvedByMe: selfPRequest ? voteToDescription(selfPRequest.vote) : ""
+                        approvedByMe: selfPRequest ? voteToDescription(selfPRequest.vote) : "",
+                        owner: pr?.createdBy?.displayName
                     };
                 }))
                 .then(data => {
