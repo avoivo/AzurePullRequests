@@ -7,12 +7,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self';connect-src https://dev.azure.com/">
     <title>Document</title>
-    <link rel="stylesheet" type="text/css" href="styles/index.css" />
     <link rel="stylesheet" type="text/css" href="styles/spinner.css" />
+    <link rel="stylesheet" type="text/css" href="styles/alert.css" />
+    <link rel="stylesheet" type="text/css" href="styles/index.css" />
 </head>
 
 <body>
     <div class="header">
+        <div id="alert-container">
+
+        </div>
         <form id="configuration">
             <fieldset>
                 <legend>Azure Devops</legend>
@@ -98,6 +102,7 @@
     </template>
 
     <script src="src/templates.js"></script>
+    <script src="src/alert.js"></script>
     <script src="src/index.js"></script>
 </body>
 

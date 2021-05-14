@@ -43,7 +43,7 @@ class JiraConfig {
 
 
 class App {
-    constructor(appElement) {
+    constructor(appElement, alertManager) {
         this.appElement = appElement;
         this.azureDevopsConfig = new AzureDevopsConfig();
         this.jiraConfig = new JiraConfig();
@@ -51,6 +51,7 @@ class App {
         this.missingItemsTemplate = new MissingItemsTemplate(this.jiraConfig.organization);
         this.spinnerTemplate = new SpinnerTemplate();
         this.helper = new Helper();
+        this.alertManager = alertManager;
     }
 
     load() {
@@ -136,7 +137,8 @@ class App {
             .then(remainingTags => appendSection("completed", remainingTags))
             .then(remainingTags => appendSection("abandoned", remainingTags))
             .then(remainingTags => this.appElement.append(this.missingItemsTemplate.create("Missing tags", remainingTags)))
-            .catch(error => console.error(error));
+            .then(_ => this.alertManager.success("Loaded succefuly"))
+            .catch(error => this.alertManager.warning(error));
     }
 
     start() {
@@ -181,6 +183,9 @@ class App {
 
 }
 
+const alertContainerEl = document.getElementById("alert-container");
+const alertManager = new AlertManager(alertContainerEl);
+
 const appEl = document.getElementById("app");
-const app = new App(appEl);
+const app = new App(appEl, alertManager);
 app.start();
