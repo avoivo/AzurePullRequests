@@ -81,7 +81,8 @@ class PullRequestsTemplate {
         pullRequests.forEach(element => {
             const prLink = `https://${this.organization}.visualstudio.com/${this.project}/_git/${this.repository}/pullrequest/${element.codeReviewId}`;
             const jiraLink = `https://${this.jiraOrganization}.atlassian.net/browse/${element.ticket}`;
-            container.appendChild(this.itemTemplate.create(element.codeReviewId, element.title, element.ticket, element.approvedByMe, element.owner, prLink, jiraLink));
+            container.appendChild(this.itemTemplate.create(element.codeReviewId, element.title, element.ticket,
+                element.approvedByMe, element.sourceRefName, element.targetRefName, element.owner, prLink, jiraLink));
         });
 
         return this.template.clone();
@@ -93,11 +94,13 @@ class PullRequestItemTemplate {
         this.template = new Template("pull-request-item");
     }
 
-    create(id, description, ticket, vote, owner, prLink, ticketLink) {
+    create(id, description, ticket, vote, source, target, owner, prLink, ticketLink) {
         this.template.clear();
         this.template.setAnchor(".id", prLink, id);
         this.template.setAnchor(".ticket", ticketLink, ticket);
         this.template.setText(".vote", vote)
+        this.template.setText(".source", source.replace("refs/heads/", ""))
+        this.template.setText(".target", target.replace("refs/heads/", ""))
         this.template.setText(".description", description);
         this.template.setText(".owner", owner);
         return this.template.clone();

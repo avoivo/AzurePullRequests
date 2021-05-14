@@ -60,6 +60,14 @@ input[type="submit"] {
     margin-top: 9px;
 }
 
+.padding-left-4 {
+  padding-left: 4px;
+}
+
+.padding-right-4 {
+  padding-right: 4px;
+}
+
 @media only screen and (max-width: 620px) {
   form#configuration {
     flex-direction: column;
