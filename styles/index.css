@@ -41,3 +41,27 @@
 .title {
   text-transform: capitalize;
 }
+
+.input-group {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+form#configuration {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+input[type="submit"] {  
+    margin-top: 9px;
+}
+
+@media only screen and (max-width: 620px) {
+  form#configuration {
+    flex-direction: column;
+  }
+}
